@@ -542,8 +542,30 @@ registry.register(
             kind="attribute",
             html_name="value",
         ),
+        "multiple": PropDefinition(
+            "multiple",
+            kind="boolean",
+            html_name="multiple",
+        ),
     },
 )
+
+registry.register(
+    "Option",
+    "option",
+    props={
+        "value": PropDefinition(
+            "value",
+            kind="attribute",
+            html_name="value",
+        ),
+        "text": PropDefinition(
+            "text",
+            kind="text",
+        ),
+    },
+)
+
 
 registry.register(
     "Slider",

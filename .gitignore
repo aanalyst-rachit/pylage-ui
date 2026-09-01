@@ -35,3 +35,6 @@ Thumbs.db
 
 # Test generated output
 test_output/
+
+#project notes
+PROJECT_NOTES.txt

@@ -1,4 +1,1 @@
-"""Public package for PyLage Layout."""
-
-from . import layout
-from . import main
+"""Application examples and manual tests for PyLage UI."""

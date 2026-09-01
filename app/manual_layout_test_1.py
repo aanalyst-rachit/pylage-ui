@@ -38,7 +38,7 @@ header = pl.Row(
             color="#0f172a",
         ),
     ),
-    pl.Text(
+    pl.Card(
         "Admin Console",
         style=Style(
             font_size="0.9rem",
@@ -130,6 +130,14 @@ sidebar = pl.Column(
 # 4. Hero
 # ============================================================
 
+def on_get_started():
+    print("GET STARTED CLICKED")
+
+
+def on_view_documentation():
+    print("VIEW DOCUMENTATION CLICKED")
+
+
 hero = Hero(
     title="Build dashboards without fighting layout",
 
@@ -149,7 +157,8 @@ hero = Hero(
                 font_weight="600",
                 margin_right="0.75rem",
             ),
-        ),
+        ).on("click", on_get_started),
+
         pl.Text(
             "View Documentation",
             style=Style(
@@ -160,7 +169,7 @@ hero = Hero(
                 border_radius="0.375rem",
                 font_weight="600",
             ),
-        ),
+        ).on("click", on_view_documentation),
     ],
 
     style=Style(

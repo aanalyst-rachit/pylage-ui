@@ -366,6 +366,13 @@ def Select(*children, **props: Any) -> Component:
     return component("Select", *children, **props)
 
 
+def Option(text: Any, value: Any = None, **props: Any) -> Component:
+    if value is not None:
+        props["value"] = value
+
+    return component("Option", text=text, **props)
+
+
 def Slider(**props: Any) -> Component:
     return component("Slider", **props)
 
