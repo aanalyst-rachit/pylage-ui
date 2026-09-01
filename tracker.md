@@ -238,16 +238,29 @@ ke through different HTML input types use kar sake without keyword collisions.
 
 ## B2 — Checkbox
 
-**Status:** `[ ] TODO`
+**Status:** `[x] COMPLETE`
 **Priority:** `CRITICAL`
+
+### Completion Summary
+
+- Existing `Checkbox` implementation audited.
+- `checked` attribute serialization verified.
+- `checked=True/False` behavior verified.
+- Browser `change` payload includes boolean `checked` state.
+- Existing event/prop compatibility verified.
+- Python `State` → WebSocket → Browser `checked` synchronization verified.
+- Registry declares `checked` as boolean.
+- Dedicated B2 regression suite: **6 passed**.
+- Checkbox/browser regression suite: **10 passed**.
+- Full project regression suite: **608 passed**.
 
 ### Work
 
-* [ ] `checked` attribute serialization
-* [ ] Browser event payload support
-* [ ] Boolean State binding
-* [ ] Controlled checkbox behavior
-* [ ] Tests add
+* [x] `checked` attribute serialization
+* [x] Browser event payload support
+* [x] Boolean State binding
+* [x] Controlled checkbox behavior
+* [x] Tests add
 
 ---
 
