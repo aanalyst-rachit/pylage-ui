@@ -319,7 +319,14 @@ def Button(text: Any, **props: Any) -> Component:
     return component("Button", text=text, **props)
 
 
-def Input(value: Any = "", **props: Any) -> Component:
+def Input(
+    value: Any = "",
+    input_type: str | None = None,
+    **props: Any,
+) -> Component:
+    if input_type is not None:
+        props["_html_type"] = input_type
+
     if isinstance(value, State) and "on_input" not in props:
         def update_state(payload: Any) -> None:
             if isinstance(payload, dict) and "value" in payload:
