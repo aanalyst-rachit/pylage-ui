@@ -1,0 +1,168 @@
+from __future__ import annotations
+
+
+CLIENT_RUNTIME = r"""
+(function () {
+    "use strict";
+
+    window.PyLage = window.PyLage || {};
+
+    function connectWebSocket(url) {
+        if (!url) {
+            return null;
+        }
+
+        console.log("[PyLage] Connecting:", url);
+
+        let socket;
+
+        try {
+            socket = new WebSocket(url);
+        } catch (error) {
+            console.error("[PyLage] WebSocket creation failed", error);
+            return null;
+        }
+
+        socket.addEventListener("open", function () {
+            console.log("[PyLage] WebSocket connected");
+            window.PyLage.socket = socket;
+        });
+
+        socket.addEventListener("close", function () {
+            console.log("[PyLage] WebSocket disconnected");
+        });
+
+        socket.addEventListener("error", function (error) {
+            console.error("[PyLage] WebSocket error", error);
+        });
+
+        socket.addEventListener("message", function (event) {
+            try {
+                const message = JSON.parse(event.data);
+
+                if (
+                    window.PyLage &&
+                    typeof window.PyLage.onResponse === "function"
+                ) {
+                    window.PyLage.onResponse(message);
+                }
+            } catch (error) {
+                console.error("[PyLage] Invalid server message", error);
+            }
+        });
+
+        return socket;
+    }
+
+    function sendEvent(componentId, eventName, payload) {
+        const message = {
+            type: "event",
+            id: componentId,
+            event: eventName
+        };
+
+        if (payload !== undefined) {
+            message.payload = payload;
+        }
+
+        const socket = window.PyLage.socket;
+
+        if (
+            socket &&
+            socket.readyState === WebSocket.OPEN
+        ) {
+            console.log("[PyLage] Sending event:", message);
+            socket.send(JSON.stringify(message));
+            return;
+        }
+
+        console.warn(
+            "[PyLage] WebSocket not ready; event not sent:",
+            message
+        );
+
+        if (
+            window.PyLage &&
+            typeof window.PyLage.onEvent === "function"
+        ) {
+            window.PyLage.onEvent(message);
+        }
+    }
+
+    function handleEvent(event) {
+        const target = event.target.closest("[data-pylage-id]");
+
+        if (!target) {
+            return;
+        }
+
+        const componentId = target.getAttribute("data-pylage-id");
+        const eventNames = target.getAttribute("data-pylage-events");
+
+        if (!componentId || !eventNames) {
+            return;
+        }
+
+        const supportedEvents = eventNames
+            .split(",")
+            .map(function (name) {
+                return name.trim();
+            });
+
+        if (supportedEvents.indexOf(event.type) === -1) {
+            return;
+        }
+
+        sendEvent(componentId, event.type);
+    }
+
+    window.PyLage.onEvent = window.PyLage.onEvent || function (message) {
+        console.log("[PyLage event]", message);
+    };
+
+    window.PyLage.onResponse = window.PyLage.onResponse || function (message) {
+        console.log("[PyLage response]", message);
+
+        if (!message || message.type !== "update") {
+            return;
+        }
+
+        const component = document.querySelector(
+            '[data-pylage-id="' + CSS.escape(message.id) + '"]'
+        );
+
+        if (!component || !message.props) {
+            return;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(message.props, "text")) {
+            component.textContent = String(message.props.text);
+        }
+
+        window.PyLage.onUpdate = window.PyLage.onUpdate || function () {};
+        window.PyLage.onUpdate(message);
+    };
+
+    document.addEventListener("click", handleEvent);
+    document.addEventListener("change", handleEvent);
+
+    window.PyLage.socket = connectWebSocket(
+        window.PyLage.websocketUrl
+    );
+})();
+"""
+
+
+def get_client_runtime(websocket_url: str | None = None) -> str:
+    """Return the embedded PyLage browser runtime."""
+
+    url = websocket_url or ""
+
+    bootstrap = (
+        "<script>\n"
+        "window.PyLage = window.PyLage || {};\n"
+        f"window.PyLage.websocketUrl = {url!r};\n"
+        "</script>\n"
+    )
+
+    return bootstrap + CLIENT_RUNTIME

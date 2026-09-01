@@ -1,0 +1,46 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
+import uuid
+
+
+Child = Any
+
+
+@dataclass
+class Component:
+    type: str
+    props: dict[str, Any] = field(default_factory=dict)
+    children: list[Child] = field(default_factory=list)
+    id: str = field(default_factory=lambda: uuid.uuid4().hex[:10])
+
+    def add(self, *children: Child) -> "Component":
+        self.children.extend(children)
+        return self
+
+    def __repr__(self) -> str:
+        return (
+            f"Component("
+            f"type={self.type!r}, "
+            f"id={self.id!r}, "
+            f"props={self.props!r}, "
+            f"children={self.children!r})"
+        )
+
+
+def component(
+    type: str,
+    *children: Child,
+    **props: Any,
+) -> Component:
+    normalized_children = [
+        child for child in children
+        if child is not None
+    ]
+
+    return Component(
+        type=type,
+        props=dict(props),
+        children=normalized_children,
+    )

@@ -1,0 +1,201 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Callable
+
+
+@dataclass(frozen=True)
+class PropDefinition:
+    """Definition of a component property."""
+
+    name: str
+    kind: str = "attribute"
+    reactive: bool = True
+
+
+@dataclass(frozen=True)
+class ComponentDefinition:
+    """Rendering definition for a PyLage component."""
+
+    type: str
+    tag: str
+    void: bool = False
+    renderer: Callable[..., str] | None = None
+    props: dict[str, PropDefinition] | None = None
+
+
+class ComponentRegistry:
+    """Registry of known PyLage component rendering definitions."""
+
+    def __init__(self) -> None:
+        self._definitions: dict[str, ComponentDefinition] = {}
+
+    def register(
+        self,
+        type: str,
+        tag: str,
+        *,
+        void: bool = False,
+        renderer: Callable[..., str] | None = None,
+        props: dict[str, PropDefinition] | None = None,
+    ) -> ComponentDefinition:
+        if not isinstance(type, str) or not type:
+            raise ValueError(
+                "component type must be a non-empty string"
+            )
+
+        if not isinstance(tag, str) or not tag:
+            raise ValueError(
+                "component tag must be a non-empty string"
+            )
+
+        if props is not None:
+            props = dict(props)
+
+            for name, definition in props.items():
+                if not isinstance(name, str) or not name:
+                    raise ValueError(
+                        "prop name must be a non-empty string"
+                    )
+
+                if not isinstance(definition, PropDefinition):
+                    raise TypeError(
+                        f"prop {name!r} must be a PropDefinition"
+                    )
+
+                if definition.name != name:
+                    raise ValueError(
+                        f"prop definition name mismatch: "
+                        f"{name!r} != {definition.name!r}"
+                    )
+
+        definition = ComponentDefinition(
+            type=type,
+            tag=tag,
+            void=void,
+            renderer=renderer,
+            props=props,
+        )
+
+        self._definitions[type] = definition
+        return definition
+
+    def get(self, type: str) -> ComponentDefinition | None:
+        return self._definitions.get(type)
+
+    def set_renderer(
+        self,
+        type: str,
+        renderer: Callable[..., str],
+    ) -> ComponentDefinition:
+        """Attach a renderer without changing the component contract."""
+
+        definition = self.require(type)
+
+        if not callable(renderer):
+            raise TypeError("renderer must be callable")
+
+        updated = ComponentDefinition(
+            type=definition.type,
+            tag=definition.tag,
+            void=definition.void,
+            renderer=renderer,
+            props=definition.props,
+        )
+
+        self._definitions[type] = updated
+        return updated
+
+    def require(self, type: str) -> ComponentDefinition:
+        definition = self.get(type)
+
+        if definition is None:
+            raise KeyError(
+                f"Unknown component type: {type!r}"
+            )
+
+        return definition
+
+    def has(self, type: str) -> bool:
+        return type in self._definitions
+
+    def unregister(self, type: str) -> None:
+        self._definitions.pop(type, None)
+
+    def types(self) -> tuple[str, ...]:
+        return tuple(self._definitions)
+
+
+registry = ComponentRegistry()
+
+
+# Built-in PyLage component definitions.
+#
+# Rendering behavior lives in HTMLRenderer, while the registry
+# owns the public component -> HTML tag + prop contract.
+registry.register(
+    "Column",
+    "div",
+)
+
+registry.register(
+    "Heading",
+    "h1",
+    props={
+        "text": PropDefinition(
+            "text",
+            kind="text",
+        ),
+    },
+)
+
+registry.register(
+    "Button",
+    "button",
+    props={
+        "text": PropDefinition(
+            "text",
+            kind="text",
+        ),
+        "value": PropDefinition(
+            "value",
+            kind="attribute",
+        ),
+        "disabled": PropDefinition(
+            "disabled",
+            kind="boolean",
+        ),
+        "title": PropDefinition(
+            "title",
+            kind="attribute",
+        ),
+    },
+)
+
+registry.register(
+    "Input",
+    "input",
+    void=True,
+    props={
+        "value": PropDefinition(
+            "value",
+            kind="attribute",
+        ),
+        "disabled": PropDefinition(
+            "disabled",
+            kind="boolean",
+        ),
+        "title": PropDefinition(
+            "title",
+            kind="attribute",
+        ),
+    },
+)
+
+
+__all__ = [
+    "PropDefinition",
+    "ComponentDefinition",
+    "ComponentRegistry",
+    "registry",
+]

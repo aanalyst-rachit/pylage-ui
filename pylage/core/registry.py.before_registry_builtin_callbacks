@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Callable
+
+
+@dataclass(frozen=True)
+class ComponentDefinition:
+    """Rendering definition for a PyLage component."""
+
+    type: str
+    tag: str
+    void: bool = False
+    renderer: Callable[[Any, Any], str] | None = None
+
+
+class ComponentRegistry:
+    """Registry of known PyLage component rendering definitions."""
+
+    def __init__(self) -> None:
+        self._definitions: dict[str, ComponentDefinition] = {}
+
+    def register(
+        self,
+        type: str,
+        tag: str,
+        *,
+        void: bool = False,
+        renderer: Callable[[Any, Any], str] | None = None,
+    ) -> ComponentDefinition:
+        if not isinstance(type, str) or not type:
+            raise ValueError("component type must be a non-empty string")
+
+        if not isinstance(tag, str) or not tag:
+            raise ValueError("component tag must be a non-empty string")
+
+        definition = ComponentDefinition(
+            type=type,
+            tag=tag,
+            void=void,
+            renderer=renderer,
+        )
+
+        self._definitions[type] = definition
+        return definition
+
+    def get(self, type: str) -> ComponentDefinition | None:
+        return self._definitions.get(type)
+
+    def require(self, type: str) -> ComponentDefinition:
+        definition = self.get(type)
+
+        if definition is None:
+            raise KeyError(
+                f"Unknown component type: {type!r}"
+            )
+
+        return definition
+
+    def has(self, type: str) -> bool:
+        return type in self._definitions
+
+    def unregister(self, type: str) -> None:
+        self._definitions.pop(type, None)
+
+    def types(self) -> tuple[str, ...]:
+        return tuple(self._definitions)
+
+
+registry = ComponentRegistry()
+
+
+registry.register("Column", "div")
+registry.register("Heading", "h1")
+registry.register("Button", "button")
+registry.register("Input", "input", void=True)
+
+
+__all__ = [
+    "ComponentDefinition",
+    "ComponentRegistry",
+    "registry",
+]
