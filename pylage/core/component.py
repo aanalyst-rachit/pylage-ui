@@ -12,7 +12,7 @@ EventHandler = Callable[..., Any]
 MutationSubscriber = Callable[[dict[str, Any]], None]
 
 
-@dataclass
+@dataclass(init=False)
 class Component:
     type: str
     props: dict[str, Any] = field(default_factory=dict)
@@ -29,6 +29,108 @@ class Component:
         init=False,
         repr=False,
     )
+
+    def __init__(
+        self,
+        type: str | None = None,
+        props: dict[str, Any] | None = None,
+        children: list[Child] | tuple[Child, ...] | None = None,
+        events: dict[str, EventHandler] | None = None,
+        id: str | None = None,
+        *,
+        tag: str | None = None,
+        style: Any = None,
+        attrs: dict[str, Any] | None = None,
+        **extra_props: Any,
+    ) -> None:
+        """
+        Create a component using either the canonical core API or the
+        normalized public API.
+
+        Canonical API::
+
+            Component(
+                type="div",
+                props={"class": "card"},
+                children=[...],
+            )
+
+        Normalized API::
+
+            Component(
+                tag="input",
+                placeholder="Enter text",
+                style={"color": "red"},
+            )
+
+        ``id`` remains the internal component identity for backward
+        compatibility. HTML attributes should be supplied through
+        ``props`` or ``attrs`` when using the direct constructor.
+        """
+
+        if type is not None and tag is not None and type != tag:
+            raise TypeError(
+                "Component received conflicting 'type' and 'tag' values."
+            )
+
+        component_type = tag if tag is not None else type
+
+        if not isinstance(component_type, str) or not component_type:
+            raise TypeError(
+                "Component requires a non-empty 'type' or 'tag' string."
+            )
+
+        if props is not None and not isinstance(props, dict):
+            raise TypeError("'props' must be a dictionary.")
+
+        if attrs is not None and not isinstance(attrs, dict):
+            raise TypeError("'attrs' must be a dictionary.")
+
+        if events is not None and not isinstance(events, dict):
+            raise TypeError("'events' must be a dictionary.")
+
+        normalized_props: dict[str, Any] = {}
+
+        if props is not None:
+            normalized_props.update(props)
+
+        if attrs is not None:
+            normalized_props.update(attrs)
+
+        normalized_props.update(extra_props)
+
+        if style is not None:
+            normalized_props["style"] = style
+
+        normalized_events = dict(events or {})
+
+        for event_name, handler in normalized_events.items():
+            if not isinstance(event_name, str) or not event_name:
+                raise ValueError(
+                    "event names must be non-empty strings."
+                )
+
+            if not callable(handler):
+                raise TypeError(
+                    f"event handler for {event_name!r} must be callable."
+                )
+
+        if children is None:
+            normalized_children: list[Child] = []
+        else:
+            normalized_children = [
+                child
+                for child in children
+                if child is not None
+            ]
+
+        self.type = component_type
+        self.props = normalized_props
+        self.children = normalized_children
+        self.events = normalized_events
+        self.id = id or uuid.uuid4().hex[:10]
+        self._parent = None
+        self._mutation_subscribers = []
 
     def __hash__(self) -> int:
         return hash(self.id)
