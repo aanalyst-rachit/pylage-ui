@@ -116,10 +116,32 @@ CLIENT_RUNTIME = r"""
         let payload;
 
         if (event.type === "input" || event.type === "change") {
+            payload = {};
+
             if ("value" in target) {
-                payload = {
-                    value: target.value
-                };
+                payload.value = target.value;
+            }
+
+            if ("checked" in target) {
+                payload.checked = Boolean(target.checked);
+            }
+
+            if ("selectedIndex" in target) {
+                payload.selectedIndex = target.selectedIndex;
+            }
+
+            if (
+                target instanceof HTMLSelectElement &&
+                target.multiple
+            ) {
+                payload.selectedOptions = Array.from(
+                    target.selectedOptions
+                ).map(function (option) {
+                    return {
+                        value: option.value,
+                        text: option.text
+                    };
+                });
             }
         }
 

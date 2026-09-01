@@ -423,11 +423,6 @@ class HTMLRenderer:
     def _render_input(self, component: Component) -> str:
         common = self._render_common_attributes(component)
 
-        if component.events:
-            events = self._event_attributes(component)
-        else:
-            events = ' data-pylage-events="input,change"'
-
         attributes = self._render_prop_attributes(
             component,
             excluded={"children"},
@@ -437,8 +432,7 @@ class HTMLRenderer:
             attributes += ' type="range"'
 
         return (
-            f"<input {common}{events}"
-            f"{attributes}>"
+            f"<input {common}{attributes}>"
         )
 
     def _render_button(self, component: Component) -> str:

@@ -82,7 +82,7 @@ COMPLETE
 
 ## A2 — Unified Browser Event Payload Protocol
 
-**Status:** `[ ] TODO`
+**Status:** `[x] DONE`
 **Priority:** `CRITICAL`
 
 ### Root Problem
@@ -99,15 +99,15 @@ Required data may include:
 
 ### Work
 
-* [ ] Current client event serializer audit
-* [ ] Current backend event parser audit
-* [ ] Standard event payload schema define
-* [ ] Input event payload support
-* [ ] Change event payload support
-* [ ] Checkbox boolean support
-* [ ] Select value support
-* [ ] Multi-select support
-* [ ] WebSocket regression tests add
+* [x] Current client event serializer audit
+* [x] Current backend event parser audit
+* [x] Standard event payload schema define
+* [x] Input event payload support
+* [x] Change event payload support
+* [x] Checkbox boolean support
+* [x] Select value support
+* [x] Multi-select support
+* [x] WebSocket regression tests add
 
 ### Completion Criteria
 
