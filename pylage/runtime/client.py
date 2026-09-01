@@ -115,7 +115,15 @@ CLIENT_RUNTIME = r"""
 
         let payload;
 
-        if (event.type === "input" || event.type === "change") {
+        if (event.type === "submit") {
+            event.preventDefault();
+
+            payload = {
+                values: Object.fromEntries(
+                    new FormData(target).entries()
+                )
+            };
+        } else if (event.type === "input" || event.type === "change") {
             payload = {};
 
             if ("value" in target) {
@@ -615,6 +623,7 @@ CLIENT_RUNTIME = r"""
     document.addEventListener("click", handleEvent);
     document.addEventListener("input", handleEvent);
     document.addEventListener("change", handleEvent);
+    document.addEventListener("submit", handleEvent);
 
     window.PyLage.socket = connectWebSocket(
         window.PyLage.websocketUrl

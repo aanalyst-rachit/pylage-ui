@@ -37,3 +37,61 @@ def test_form_supports_props():
 
     assert 'method="post"' in html
     assert 'action="/submit"' in html
+
+
+def test_form_supports_submit_event():
+    form = Form(on_submit=lambda payload: None)
+
+    html = render(form)
+
+    assert 'data-pylage-events="submit"' in html
+
+
+def test_form_submit_event_is_in_client_runtime():
+    from pylage.runtime.client import CLIENT_RUNTIME
+
+    assert 'document.addEventListener("submit", handleEvent)' in CLIENT_RUNTIME
+    assert "event.preventDefault()" in CLIENT_RUNTIME
+
+
+def test_form_submit_runtime_builds_payload():
+    from pylage.runtime.client import CLIENT_RUNTIME
+
+    assert "FormData" in CLIENT_RUNTIME
+    assert "sendEvent(componentId, event.type, payload)" in CLIENT_RUNTIME
+
+
+def test_form_submit_dispatches_payload():
+    from pylage.core.events import EventDispatcher
+
+    received = []
+
+    def handle_submit(payload):
+        received.append(payload)
+        return "submitted"
+
+    form = Form(
+        Input(name="email", value="test@example.com"),
+        on_submit=handle_submit,
+    )
+
+    dispatcher = EventDispatcher(form)
+
+    result = dispatcher.dispatch(
+        form.id,
+        "submit",
+        {
+            "values": {
+                "email": "test@example.com",
+            }
+        },
+    )
+
+    assert result == "submitted"
+    assert received == [
+        {
+            "values": {
+                "email": "test@example.com",
+            }
+        }
+    ]

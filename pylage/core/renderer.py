@@ -216,7 +216,7 @@ class HTMLRenderer:
                     )
                 continue
 
-            if kind == "text":
+            if kind in {"text", "state"}:
                 continue
 
             if value is True:
@@ -229,6 +229,29 @@ class HTMLRenderer:
                 f'{escape(html_name, quote=True)}='
                 f'"{escape(str(value), quote=True)}"'
             )
+
+        # RadioGroup contract: keep the selected radio marker
+        # immediately after its value attribute.
+        if (
+            component.type == "Input"
+            and component.props.get("_html_type") == "radio"
+        ):
+            value_attr = next(
+                (attr for attr in attributes if attr.startswith("value=")),
+                None,
+            )
+            checked_attr = next(
+                (attr for attr in attributes if attr == "checked"),
+                None,
+            )
+
+            if value_attr is not None and checked_attr is not None:
+                attributes.remove(value_attr)
+                attributes.remove(checked_attr)
+
+                value_index = 0
+                attributes.insert(value_index, checked_attr)
+                attributes.insert(value_index, value_attr)
 
         if not attributes:
             return ""

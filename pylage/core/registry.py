@@ -498,6 +498,12 @@ registry.register(
             kind="attribute",
             html_name="title",
         ),
+        "value": PropDefinition(
+            "value",
+            kind="text",
+            reactive=True,
+            html_name=None,
+        ),
     },
 )
 
@@ -1008,6 +1014,16 @@ registry.register(
             "disabled",
             kind="boolean",
             html_name="disabled",
+        ),
+        "checked": PropDefinition(
+            "checked",
+            kind="boolean",
+            html_name="checked",
+        ),
+        "name": PropDefinition(
+            "name",
+            kind="attribute",
+            html_name="name",
         ),
         "title": PropDefinition(
             "title",

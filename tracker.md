@@ -297,33 +297,33 @@ ke through different HTML input types use kar sake without keyword collisions.
 
 ## B4 — RadioGroup
 
-**Status:** `[ ] TODO`
+**Status:** `[x] COMPLETE`
 **Priority:** `HIGH`
 
 ### Work
 
-* [ ] Official radio option structure
-* [ ] Label association
-* [ ] Group value management
-* [ ] Checked state synchronization
-* [ ] Browser rendering verification
-* [ ] Tests add
+* [x] Official radio option structure
+* [x] Label association
+* [x] Group value management
+* [x] Checked state synchronization
+* [x] Browser rendering verification
+* [x] Tests add
 
 ---
 
 ## B5 — Form Submission
 
-**Status:** `[ ] TODO`
+**Status:** `[x] COMPLETE`
 **Priority:** `HIGH`
 
 ### Work
 
-* [ ] Native submit behavior audit
-* [ ] `preventDefault()` strategy
-* [ ] Submit event protocol
-* [ ] Structured form payload
-* [ ] State integration
-* [ ] Tests add
+* [x] Native submit behavior audit
+* [x] `preventDefault()` strategy
+* [x] Submit event protocol
+* [x] Structured form payload
+* [x] State integration
+* [x] Tests add
 
 ---
 
@@ -339,7 +339,7 @@ ke through different HTML input types use kar sake without keyword collisions.
 * [ ] Min/max support
 * [ ] Step support
 * [ ] State binding
-* [ ] Tests add
+* [x] Tests add
 
 ---
 
@@ -354,7 +354,7 @@ ke through different HTML input types use kar sake without keyword collisions.
 * [ ] Value synchronization
 * [ ] State binding
 * [ ] Date constraints
-* [ ] Tests add
+* [x] Tests add
 
 ---
 

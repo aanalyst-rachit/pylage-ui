@@ -362,7 +362,42 @@ def Checkbox(**props: Any) -> Component:
 
 
 def RadioGroup(*children, **props: Any) -> Component:
-    return component("RadioGroup", *children, **props)
+    value = props.pop("value", None)
+
+    group = component("RadioGroup", *children, **props)
+
+    if value is not None:
+        group.props["value"] = value
+
+        def sync_selected(selected):
+            for child in group.children:
+                if not isinstance(child, Component):
+                    continue
+
+                if child.type != "Input":
+                    continue
+
+                if child.props.get("_html_type") != "radio":
+                    continue
+
+                child.props["checked"] = (
+                    child.props.get("value") == selected
+                )
+
+        selected = (
+            value.value
+            if isinstance(value, State)
+            else value
+        )
+
+        sync_selected(selected)
+
+        if isinstance(value, State):
+            value.subscribe(
+                lambda _old, new: sync_selected(new)
+            )
+
+    return group
 
 
 def Switch(**props: Any) -> Component:
