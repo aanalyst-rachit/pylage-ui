@@ -266,17 +266,32 @@ ke through different HTML input types use kar sake without keyword collisions.
 
 ## B3 — Switch
 
-**Status:** `[ ] TODO`
+**Status:** `[x] COMPLETE`
 **Priority:** `HIGH`
+
+### Completion Summary
+
+- Existing `Switch` implementation audited.
+- Switch renders as a checkbox input with `type="checkbox"`.
+- `checked=True/False` behavior verified.
+- Existing class/title props and `on_change` compatibility verified.
+- Boolean `State` binding verified.
+- Python `State` → WebSocket → Browser `checked` synchronization verified.
+- Browser `change` interaction reports boolean `checked` state.
+- Registry declares `checked` as boolean.
+- Existing title/DOM metadata preserved for accessibility.
+- Dedicated B3 regression suite: **7 passed**.
+- Switch/browser regression suite: **11 passed**.
+- Full project regression suite: **615 passed**.
 
 ### Work
 
-* [ ] Current Switch implementation audit
-* [ ] Switch visual contract define
-* [ ] Boolean binding integration
-* [ ] Change interaction verify
-* [ ] Accessibility behavior
-* [ ] Tests add
+* [x] Current Switch implementation audit
+* [x] Switch visual/render contract define
+* [x] Boolean binding integration
+* [x] Change interaction verify
+* [x] Accessibility behavior
+* [x] Tests add
 
 ---
 
