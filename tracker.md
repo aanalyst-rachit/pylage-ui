@@ -329,16 +329,16 @@ ke through different HTML input types use kar sake without keyword collisions.
 
 ## B6 — Slider
 
-**Status:** `[ ] TODO`
+**Status:** `[x] COMPLETE`
 **Priority:** `HIGH`
 
 ### Work
 
-* [ ] Range input rendering
-* [ ] Value event synchronization
-* [ ] Min/max support
-* [ ] Step support
-* [ ] State binding
+* [x] Range input rendering
+* [x] Value event synchronization
+* [x] Min/max support
+* [x] Step support
+* [x] State binding
 * [x] Tests add
 
 ---
