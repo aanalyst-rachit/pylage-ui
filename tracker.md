@@ -345,15 +345,15 @@ ke through different HTML input types use kar sake without keyword collisions.
 
 ## B7 — DatePicker
 
-**Status:** `[ ] TODO`
+**Status:** `[x] COMPLETE`
 **Priority:** `HIGH`
 
 ### Work
 
-* [ ] Date input rendering
-* [ ] Value synchronization
-* [ ] State binding
-* [ ] Date constraints
+* [x] Date input rendering
+* [x] Value synchronization
+* [x] State binding
+* [x] Date constraints
 * [x] Tests add
 
 ---

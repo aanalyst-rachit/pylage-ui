@@ -35,3 +35,53 @@ def test_datepicker_supports_min_max():
 
     assert 'min="2026-01-01"' in html
     assert 'max="2026-12-31"' in html
+
+
+def test_datepicker_state_renders_initial_value():
+    from pylage import State
+
+    selected = State("2026-08-30")
+    datepicker = DatePicker(value=selected)
+
+    html = render(datepicker)
+
+    assert 'value="2026-08-30"' in html
+
+
+def test_datepicker_state_updates_from_input_event():
+    from pylage import State
+    from pylage.core.events import EventDispatcher
+
+    selected = State("2026-08-30")
+    datepicker = DatePicker(value=selected)
+
+    dispatcher = EventDispatcher(datepicker)
+
+    dispatcher.dispatch(
+        datepicker.id,
+        "input",
+        {"value": "2026-09-01"},
+    )
+
+    assert selected.value == "2026-09-01"
+
+
+def test_datepicker_state_updates_from_change_event():
+    from pylage import State
+    from pylage.core.events import EventDispatcher
+
+    selected = State("2026-08-30")
+    datepicker = DatePicker(
+        value=selected,
+        on_change=lambda payload: selected.set(payload["value"]),
+    )
+
+    dispatcher = EventDispatcher(datepicker)
+
+    dispatcher.dispatch(
+        datepicker.id,
+        "change",
+        {"value": "2026-09-01"},
+    )
+
+    assert selected.value == "2026-09-01"
